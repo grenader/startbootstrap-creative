@@ -91,7 +91,7 @@ jobs:
           at: workspace
       - run: |
           echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-          gcloud --quiet config set project ${GOOGLE_PROJECT}
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
 
       - run:
@@ -109,7 +109,7 @@ jobs:
           name: Deploy to GCP
           command: |
             cd workspace
-            gcloud app deploy --project ${GOOGLE_PROJECT}
+            gcloud app deploy --project ${GOOGLE_PROJECT_ID}
 
   deploy_others:
     docker:
@@ -122,7 +122,7 @@ jobs:
           at: workspace
       - run: |
           echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
-          gcloud --quiet config set project ${GOOGLE_PROJECT}
+          gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
 
       - run:
@@ -140,7 +140,7 @@ jobs:
           name: Deploy to GCP
           command: |
             cd workspace
-            gcloud app deploy --project ${GOOGLE_PROJECT} -v ${CIRCLE_BRANCH} --no-promote
+            gcloud app deploy --project ${GOOGLE_PROJECT_ID} -v ${CIRCLE_BRANCH} --no-promote
 
 workflows:
   version: 2
