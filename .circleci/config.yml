@@ -52,7 +52,17 @@ jobs:
       - store_artifacts:
           path: ./css
       - store_artifacts:
-          path: ./vendor
+          path: ./vendor/fontawesome-free/css/all.min.css
+      - store_artifacts:
+          path: ./vendor/magnific-popup/magnific-popup.css
+      - store_artifacts:
+          path: ./vendor/jquery/jquery.min.js
+      - store_artifacts:
+          path: ./vendor/bootstrap/js/bootstrap.bundle.min.js
+      - store_artifacts:
+          path: ./vendor/jquery-easing/jquery.easing.min.js
+      - store_artifacts:
+          path: ./vendor/magnific-popup/jquery.magnific-popup.min.js
       - store_artifacts:
           path: ./img
       - store_artifacts:
@@ -150,6 +160,5 @@ workflows:
             branches:
               ignore:
                 - master
-                - branch2018
 
 
