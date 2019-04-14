@@ -1,0 +1,155 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:7.10
+
+      # Specify service dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/mongo:3.4.4
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      # Install project dependencies
+      - run:
+          name: Install project dependencies
+          command: npm install
+
+      # Build the application
+      - run:
+          name: Build the application
+          command: node node_modules/gulp/bin/gulp.js
+
+      - store_artifacts:
+          path: ./index.html
+      - store_artifacts:
+          path: ./robots.txt
+      - store_artifacts:
+          path: ./sitemap.xml
+      - store_artifacts:
+          path: ./css
+      - store_artifacts:
+          path: ./vendor
+      - store_artifacts:
+          path: ./img
+      - store_artifacts:
+          path: ./files
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - app.yaml
+            - index.html
+            - robots.txt
+            - sitemap.xml
+            - css
+            - vendor
+            - img
+            - files
+
+  deploy_main:
+    docker:
+      - image: google/cloud-sdk
+
+    working_directory: ~/repo
+
+    steps:
+      - attach_workspace:
+          at: workspace
+      - run: |
+          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+          gcloud --quiet config set project ${GOOGLE_PROJECT}
+          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
+      - run:
+          name: Jump into stored workspace
+          command: cd workspace
+
+      - run:
+          name: List stuff
+          command: |
+            cd workspace
+            pwd
+            ls -la
+
+      - run:
+          name: Deploy to GCP
+          command: |
+            cd workspace
+            gcloud app deploy --project ${GOOGLE_PROJECT}
+
+  deploy_others:
+    docker:
+      - image: google/cloud-sdk
+
+    working_directory: ~/repo
+
+    steps:
+      - attach_workspace:
+          at: workspace
+      - run: |
+          echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+          gcloud --quiet config set project ${GOOGLE_PROJECT}
+          gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+
+      - run:
+          name: Jump into stored workspace
+          command: cd workspace
+
+      - run:
+          name: List stuff
+          command: |
+            cd workspace
+            pwd
+            ls -la
+
+      - run:
+          name: Deploy to GCP
+          command: |
+            cd workspace
+            gcloud app deploy --project ${GOOGLE_PROJECT} -v ${CIRCLE_BRANCH} --no-promote
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
+      - deploy_main:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+      - deploy_others:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore:
+                - master
+                - branch2018
+
+

@@ -1,0 +1,32 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+default_expiration: "12h"
+skip_files:
+- ^node_modules$
+- ^scss$
+- ^.idea$
+
+handlers:
+- url: /
+  static_files: index.html
+  upload: index.html
+  expiration: "1m"
+
+- url: /(.+\.(html|txt|xml))$
+  static_files: \1
+  upload: .+\.(html|txt|xml)$
+  application_readable: true
+  expiration: "1m"
+
+- url: /vendor/(.*)
+  static_files: vendor/\1
+  upload: vendor/(.*)
+
+- url: /img/(.*)
+  static_files: img/\1
+  upload: img/(.*)
+
+- url: /css/(.*)
+  static_files: css/\1
+  upload: css/(.*)
