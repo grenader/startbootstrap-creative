@@ -11,7 +11,7 @@
   .navbar-nav {
     .nav-item {
       .nav-link {
-        color: $gray-600;
+        color: #FFA500;
         font-family: $font-family-sans-serif;
         font-weight: $font-weight-bold;
         font-size: 0.9rem;
@@ -39,7 +39,7 @@
     .navbar-nav {
       .nav-item {
         .nav-link {
-          color: fade-out($white, .3);
+          color: #FFA500;
           padding: 0 1rem;
           &:hover {
             color: $white;
